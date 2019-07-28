@@ -1,0 +1,115 @@
+import time
+from time import gmtime, strftime
+from auth import accounts
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+
+a = strftime("%H:%M:%S", gmtime())
+path = '/home/friqueel/pyproj/selenium/chromedriver'
+PROXY = ""
+
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--proxy-server=%s' % PROXY)
+#chrome_options.add_argument('--headless')
+chrome_options.add_argument("--start-maximized")
+chrome = webdriver.Chrome(chrome_options=chrome_options, executable_path=path)
+
+chrome.get('https://smmok14.ru/')
+
+time.sleep(2)
+
+window_before = chrome.window_handles[0]
+login_button = chrome.find_element_by_xpath('//*[@id="uLogin"]/a').click()
+window_after = chrome.window_handles[1]
+chrome.switch_to_window(window_after)
+
+print("Run...")
+print("OK. Lets go!" + " " + a)
+time.sleep(2)
+
+login_field = chrome.find_element_by_name('email').send_keys(accounts[''])
+
+time.sleep(2)
+
+password_field = chrome.find_element_by_name('pass').send_keys(accounts[''])
+
+time.sleep(2)
+
+submit = chrome.find_element_by_id('install_allow').click()
+
+try:
+	while True:
+		window_after = chrome.window_handles[0]
+		chrome.switch_to_window(window_after)
+
+		performer = chrome.find_element_by_class_name('offert').click()
+
+		try:
+			close_dialog = chrome.find_element_by_class_name('ui-dialog-buttonset').click()
+		except:
+			print("Window already closed!" + " " + a)
+
+		chrome.implicitly_wait(5)
+
+		wait = WebDriverWait(chrome, 15)
+		wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a.button'))).click()
+
+		#task = chrome.find_element_by_css_selector('a.button')
+		submit = chrome.find_element_by_class_name('ui-button-text').click()
+
+		time.sleep(4)
+
+		window_after = chrome.window_handles[1]
+		chrome.switch_to_window(window_after)
+
+		try:
+			subscribe = chrome.find_element_by_id('join_button').click()
+		except:
+			print ('Can`t join!' + " " + a)
+
+		try:
+			subscribe_public = chrome.find_element_by_id('public_subscribe').click()
+		except:
+			print ('Can`t subscribe!' + " " + a)
+
+		try:
+			window_button = find_element_by_class_name('wk_subscribe_label').click()
+		except:
+			print('This is not a wall!' + " " + a)
+
+		try:
+			add_button = find_element_by_xpath('//*[@id="friend_status"]/div/button').click()
+		except:
+			print('This is not profile page!' + " " + a)	
+
+		time.sleep(1)
+
+		chrome.close()
+		window_after = chrome.window_handles[0]
+		chrome.switch_to_window(window_before)
+
+		time.sleep(2)
+
+		done_task = chrome.find_element_by_class_name('ui-button-text').click()	
+
+		time.sleep(1)
+
+		try:
+			close_window_error = chrome.find_element_by_xpath('//span[text()="Назад"]')
+			chrome.refresh()                        
+			time.sleep(1)
+			delete_task = chrome.find_element_by_css_selector('.delete_project').click()
+			time.sleep(1)
+		except:
+			print('Task was done!' + " " + a)
+
+		try:
+			ok_button = chrome.find_element_by_css_selector('.ui-dialog-titlebar-close').click()
+		except:
+			print('Task was failed!' + " " + a)
+
+except:
+	print('Something wrong or tasks was end!' + " " + a)
