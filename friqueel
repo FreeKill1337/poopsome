@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
 a = strftime("%H:%M:%S", gmtime())
-path = '/home/friqueel/pyproj/selenium/chromedriver'
+path = ''
 PROXY = ""
 
 chrome_options = webdriver.ChromeOptions()
